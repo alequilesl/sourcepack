@@ -71,7 +71,10 @@ Mueve el binario `sourcepack` a un directorio de tu `PATH` (ej: `/usr/local/bin`
             Archivo de salida (default "output.txt")
       -no-gitignore
             No leer .gitignore (el .spignore se sigue aplicando siempre)
-
+      -v
+            Imprimir rutas incluidas con su tamaño
+      -list string
+            Leer un archivo generado previamente e imprimir las rutas incluidas con su tamaño
 ---
 
 ## Parámetros
@@ -81,6 +84,8 @@ Mueve el binario `sourcepack` a un directorio de tu `PATH` (ej: `/usr/local/bin`
 | `<path>`        | _(requerido)_| Directorio raíz del proyecto a empaquetar. |
 | `-o`            | `output.txt` | Ruta del archivo de salida. |
 | `-no-gitignore` | `false`      | Si se pasa, no se lee el `.gitignore` de la raíz. El `.spignore` se sigue aplicando siempre. |
+| `-v`            | `false`      | Al empaquetar, imprime cada ruta incluida con su tamaño. |
+| `-list`         | _(vacío)_    | Ruta de un archivo previamente generado por `sourcepack`. En vez de empaquetar, imprime las rutas que contiene con su tamaño. No requiere `<path_carpeta>`. |
 
 ### Comportamiento por defecto
 

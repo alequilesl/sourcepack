@@ -14,14 +14,27 @@ import (
 func main() {
 	var outputFile string
 	var noGitignore bool
+	var verbose bool
+	var listFile string
 
 	flag.StringVar(&outputFile, "o", "output.txt", "Archivo de salida")
 	flag.BoolVar(&noGitignore, "no-gitignore", false, "No leer .gitignore (el .spignore se sigue aplicando siempre)")
+	flag.BoolVar(&verbose, "v", false, "Imprimir rutas incluidas con su tamaño")
+	flag.StringVar(&listFile, "list", "", "Leer un archivo generado previamente e imprimir las rutas incluidas con su tamaño")
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "Uso: %s [opciones] <path_carpeta>\n\nOpciones:\n", os.Args[0])
 		flag.PrintDefaults()
 	}
 	flag.Parse()
+
+	// Modo -list: no requiere path
+	if listFile != "" {
+		if err := listGeneratedFile(listFile); err != nil {
+			fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+			os.Exit(1)
+		}
+		return
+	}
 
 	if flag.NArg() < 1 {
 		flag.Usage()
@@ -99,7 +112,6 @@ func main() {
 			return nil
 		}
 
-		// Exclusión por .spignore o .gitignore
 		if isExcluded(rel, d.IsDir()) {
 			if d.IsDir() {
 				return filepath.SkipDir
@@ -159,10 +171,84 @@ func main() {
 		if len(content) > 0 && content[len(content)-1] != '\n' {
 			fmt.Fprintln(out)
 		}
+
+		if verbose {
+			fmt.Printf("%s  %s\n", formatSize(int64(len(content))), relPath)
+		}
 		written++
 	}
 
 	fmt.Printf("Generado: %s (%d archivos)\n", outputFile, written)
+}
+
+// listGeneratedFile lee un archivo generado por sourcepack y muestra cada ruta con su tamaño.
+// Formato esperado: encabezado "path/relativo", contenido hasta el separador o EOF.
+func listGeneratedFile(path string) error {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("no se pudo leer %s: %w", path, err)
+	}
+
+	content := string(data)
+	separator := strings.Repeat("-", 80)
+
+	blocks := strings.Split(content, separator+"\n")
+
+	type entry struct {
+		path string
+		size int
+	}
+	var entries []entry
+
+	for _, block := range blocks {
+		block = strings.TrimPrefix(block, "\n")
+		if block == "" {
+			continue
+		}
+
+		// Primera línea = ruta relativa, resto = contenido
+		nl := strings.IndexByte(block, '\n')
+		if nl == -1 {
+			// bloque sin contenido
+			entries = append(entries, entry{path: strings.TrimSpace(block), size: 0})
+			continue
+		}
+		relPath := strings.TrimSpace(block[:nl])
+		body := block[nl+1:]
+
+		// Ignorar bloques que no parecen rutas (por si hay falsos positivos)
+		if relPath == "" || strings.ContainsAny(relPath, " \t") && !strings.Contains(relPath, "/") {
+			// heurística: si no parece ruta, saltamos
+		}
+
+		entries = append(entries, entry{path: relPath, size: len(body)})
+	}
+
+	if len(entries) == 0 {
+		fmt.Printf("%s: sin entradas\n", path)
+		return nil
+	}
+
+	var total int
+	for _, e := range entries {
+		fmt.Printf("%s  %s\n", formatSize(int64(e.size)), e.path)
+		total += e.size
+	}
+	fmt.Printf("Total: %d archivos, %s\n", len(entries), formatSize(int64(total)))
+	return nil
+}
+
+func formatSize(n int64) string {
+	const unit = 1024
+	if n < unit {
+		return fmt.Sprintf("%4d B", n)
+	}
+	div, exp := int64(unit), 0
+	for m := n / unit; m >= unit; m /= unit {
+		div *= unit
+		exp++
+	}
+	return fmt.Sprintf("%6.1f %cB", float64(n)/float64(div), "KMGTPE"[exp])
 }
 
 // ---- gitignore-style patterns ----
