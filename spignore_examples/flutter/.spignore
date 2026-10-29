@@ -1,0 +1,101 @@
+# ============================================
+# .spignore para proyecto Flutter
+# ============================================
+
+# --- Carpetas de build y artefactos ---
+build/
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+coverage/
+*.iml
+
+# --- Plataformas nativas: solo interesa si tocas código nativo ---
+# Descomenta las que NO uses o no quieras incluir
+android/
+ios/
+linux/
+macos/
+windows/
+web/
+
+# --- Dependencias ---
+.pubspec.lock
+pubspec.lock
+
+# --- Ficheros generados ---
+*.g.dart
+*.freezed.dart
+*.mocks.dart
+*.gen.dart
+lib/generated_plugin_registrant.dart
+lib/generated_plugin_registrant.dart
+
+# --- Configuración local / secretos ---
+.env
+.env.*
+*.keystore
+*.jks
+*.p12
+*.pem
+key.properties
+google-services.json
+GoogleService-Info.plist
+firebase_options.dart
+
+# --- IDE / editor ---
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# --- Binarios e imágenes pesadas (no aportan al contexto) ---
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.svg
+*.ttf
+*.otf
+*.woff
+*.woff2
+*.mp3
+*.mp4
+*.wav
+*.zip
+*.tar
+*.gz
+*.pdf
+*.apk
+*.aab
+*.ipa
+
+# --- Assets binarios (pero deja los .yaml/.json de config) ---
+assets/images/
+assets/fonts/
+assets/audio/
+assets/video/
+
+# --- Ficheros de sistema ---
+.DS_Store
+Thumbs.db
+
+# --- Logs y temporales ---
+*.log
+*.tmp
+*.bak
+
+# --- Excepciones: sí quiero incluir estos aunque encajen arriba ---
+!pubspec.yaml
+!analysis_options.yaml
+!README.md
+!lib/main.dart
+
+# --- Documentación generada ---
+doc/api/
