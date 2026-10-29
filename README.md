@@ -14,7 +14,7 @@ Todas las exclusiones e inclusiones se gestionan mediante ficheros estilo gitign
 
 Si tienes Go instalado, puedes instalar `sourcepack` directamente desde el repositorio:
 
-    go install github.com/tu-usuario/sourcepack@latest
+    go install github.com/alequilesl/sourcepack@latest
 
 > **Nota**: A partir de Go 1.17, `go install` es la forma recomendada de instalar ejecutables. `go get` ya no se usa para este propósito.
 
@@ -54,7 +54,7 @@ Verifica:
 
 ### Compilar desde el código fuente (alternativa)
 
-    git clone https://github.com/tu-usuario/sourcepack.git
+    git clone https://github.com/alequilesl/sourcepack.git
     cd sourcepack
     go build -o sourcepack main.go
 
